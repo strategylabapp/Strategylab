@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F1 Strategy Simulator - StrategyLab</title>
+
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+<header>
+
+<div class="logo">
+<img src="logo.png" alt="StrategyLab Logo" height="55">
+</div>
+
+<nav>
+<a href="index.html">Home</a>
+<a href="simulation.html">New Simulation</a>
+<a href="projects.html">Projects</a>
+<a href="settings.html">Settings</a>
+</nav>
+
+</header>
+
+<section class="hero">
+
+<div class="hero-text">
+
+<h1>
+Formula 1<br>
+Strategy Simulator
+</h1>
+
+<p>
+Configure your race conditions and create the optimal strategy.
+</p>
+
+</div>
+
+</section>
+
+<section class="cards">
+
+<div class="card">
+
+<h2>🏁 Race Information</h2>
+
+<label>Circuit</label>
+
+<select id="circuit">
+<option>Barcelona-Catalunya</option>
+<option>Bahrain</option>
+<option>Saudi Arabia</option>
+<option>Australia</option>
+<option>Japan</option>
+<option>Miami</option>
+<option>Monaco</option>
+<option>Canada</option>
+<option>Austria</option>
+<option>Silverstone</option>
+<option>Spa-Francorchamps</option>
+<option>Hungary</option>
+<option>Zandvoort</option>
+<option>Monza</option>
+<option>Singapore</option>
+<option>Austin</option>
+<option>Mexico</option>
+<option>Brazil</option>
+<option>Las Vegas</option>
+<option>Qatar</option>
+<option>Abu Dhabi</option>
+</select>
+
+</div>
+
+<div class="card">
+
+<h2>🌦️ Conditions</h2>
+
+<label>Weather</label>
+
+<select id="weather">
+<option>Dry</option>
+<option>Mixed Conditions</option>
+<option>Rain</option>
+</select>
+
+<label>Track Temperature</label>
+
+<select>
+<option>Cold</option>
+<option>Normal</option>
+<option>Hot</option>
+</select>
+
+</div>
+
+<div class="card">
+
+<h2>🛞 Tyre Strategy</h2>
+
+<label>Starting Tyre</label>
+
+<select id="tyre">
+<option>Soft</option>
+<option>Medium</option>
+<option>Hard</option>
+<option>Intermediate</option>
+<option>Full Wet</option>
+</select>
+
+<label>Aggression</label>
+
+<select id="aggression">
+<option>Aggressive</option>
+<option>Balanced</option>
+<option>Conservative</option>
+</select>
+
+</div>
+
+<div class="card">
+
+<h2>🔧 Pit Strategy</h2>
+
+<label>Pit Stops</label>
+
+<select id="stops">
+<option>0 Stops</option>
+<option>1 Stop</option>
+<option>2 Stops</option>
+<option>3 Stops</option>
+</select>
+
+<label>Risk Level</label>
+
+<select>
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+</select>
+
+</div>
+
+</section>
+
+<div style="text-align:center; margin-top:40px;">
+
+<button onclick="saveSimulation()">
+RUN SIMULATION
+</button>
+
+</div>
+
+<footer>
+
+<p>
+StrategyLab v1.0 © 2026
+</p>
+
+<p>
+Developed by Jaume Salas López
+</p>
+
+<p>
+Contact: jaumes2934@gmail.com
+</p>
+
+</footer>
+
+<script src="app.js"></script>
+
+</body>
+</html>

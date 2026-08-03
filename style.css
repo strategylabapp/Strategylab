@@ -1,0 +1,155 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: #070707;
+    color: white;
+}
+
+
+/* HEADER */
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 60px;
+    border-bottom: 1px solid #1f1f1f;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    color: #e10600;
+}
+
+nav a {
+    color: #bbb;
+    text-decoration: none;
+    margin-left: 30px;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    color: white;
+}
+
+
+/* HERO */
+
+.hero {
+    min-height: 65vh;
+    display: flex;
+    align-items: center;
+    padding: 60px;
+}
+
+.hero-text {
+    max-width: 700px;
+}
+
+.hero h1 {
+    font-size: 70px;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    color: #aaa;
+    font-size: 21px;
+    line-height: 1.6;
+}
+
+
+button {
+    margin-top: 35px;
+    padding: 16px 40px;
+    background: #e10600;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 17px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+
+/* CARDS */
+
+.cards {
+    display: flex;
+    gap: 25px;
+    padding: 40px 60px;
+}
+
+
+.card {
+    background: #111;
+    border: 1px solid #222;
+    padding: 35px;
+    border-radius: 18px;
+    flex: 1;
+    transition: 0.3s;
+}
+
+
+.card:hover {
+    transform: translateY(-8px);
+    border-color: #e10600;
+}
+
+
+.card h2 {
+    margin-bottom: 15px;
+}
+
+
+.card p {
+    color: #999;
+    line-height: 1.5;
+}
+
+
+/* FOOTER */
+
+footer {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+}
+/* Results performance bars */
+
+.bar {
+    width: 100%;
+    height: 12px;
+    background: #222;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+}
+
+.fill {
+    height: 100%;
+    background: #e10600;
+    border-radius: 10px;
+}
+
+.pace {
+    width: 85%;
+}
+
+.tyre {
+    width: 75%;
+}

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects - StrategyLab</title>
+
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+<img src="logo.png" alt="StrategyLab Logo" height="55">
+</div>
+
+<nav>
+<a href="index.html">Home</a>
+<a href="f1-setup.html">New Simulation</a>
+<a href="projects.html">Projects</a>
+<a href="settings.html">Settings</a>
+</nav>
+
+</header>
+
+<section class="hero">
+
+<div class="hero-text">
+
+<h1>
+Projects
+</h1>
+
+<p>
+Manage your saved race strategies and simulations.
+</p>
+
+</div>
+
+</section>
+
+<section class="cards">
+
+<div class="card">
+
+<h2>📁 Saved Simulations</h2>
+
+<div id="savedProjects">
+
+<p>No saved simulations yet.</p>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>🚀 Quick Actions</h2>
+
+<a href="f1-setup.html">
+
+<button>
+NEW SIMULATION
+</button>
+
+</a>
+
+</div>
+
+<div class="card">
+
+<h2>🏆 Career Statistics</h2>
+
+<p>🏆 Wins: <b id="wins">0</b></p>
+
+<p>🥈 Podiums: <b id="podiums">0</b></p>
+
+<p>⭐ Top 5: <b id="top5">0</b></p>
+
+<p>🔟 Top 10: <b id="top10">0</b></p>
+
+<p>📁 Saved Simulations: <b id="saved">0</b></p>
+
+</div>
+
+</section>
+
+<footer>
+
+<p>
+StrategyLab v1.0 © 2026
+</p>
+
+<p>
+Developed by Jaume Salas López
+</p>
+
+<p>
+Contact: jaumes2934@gmail.com
+</p>
+
+</footer>
+
+<script>
+
+let projects =
+JSON.parse(localStorage.getItem("savedProjects")) || [];
+
+let wins = 0;
+let podiums = 0;
+let top5 = 0;
+let top10 = 0;
+
+projects.forEach(project => {
+
+if(project.position === "P1"){
+wins++;
+podiums++;
+top5++;
+top10++;
+}
+
+else if(project.position === "P2" || project.position === "P3"){
+podiums++;
+top5++;
+top10++;
+}
+
+else if(project.position === "P4" || project.position === "P5"){
+top5++;
+top10++;
+}
+
+else if(
+project.position === "P6" ||
+project.position === "P7" ||
+project.position === "P8" ||
+project.position === "P9" ||
+project.position === "P10"
+){
+top10++;
+}
+
+});
+
+document.getElementById("wins").innerHTML = wins;
+document.getElementById("podiums").innerHTML = podiums;
+document.getElementById("top5").innerHTML = top5;
+document.getElementById("top10").innerHTML = top10;
+document.getElementById("saved").innerHTML = projects.length;
+
+const container =
+document.getElementById("savedProjects");
+
+if(projects.length > 0){
+
+container.innerHTML = "";
+
+projects.forEach((project,index)=>{
+
+container.innerHTML += `
+
+<div style="margin-bottom:20px;padding:15px;border:1px solid #444;border-radius:10px;">
+
+<h3>🏁 Simulation ${index+1}</h3>
+
+<p><b>Circuit:</b> ${project.circuit}</p>
+
+<p><b>Weather:</b> ${project.weather}</p>
+
+<p><b>Strategy:</b> ${project.strategy}</p>
+
+<p><b>Prediction:</b> ${project.position}</p>
+
+</div>
+
+`;
+
+});
+
+}
+
+</script>
+
+</body>
+</html>

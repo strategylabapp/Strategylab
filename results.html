@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Strategy Report - StrategyLab</title>
+
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+<header>
+
+<div class="logo">
+<img src="logo.png" alt="StrategyLab Logo" height="55">
+</div>
+
+<nav>
+
+<a href="index.html">Home</a>
+<a href="f1-setup.html">New Simulation</a>
+<a href="projects.html">Projects</a>
+<a href="settings.html">Settings</a>
+
+</nav>
+
+</header>
+<section class="hero">
+<div class="hero-text">
+<h1>
+Race Strategy<br>
+Dashboard
+</h1>
+<p>
+Professional Formula 1 strategy analysis.
+</p>
+</div>
+</section>
+<section class="cards">
+<section class="card" style="margin:40px;">
+
+<h2>🚦 Race Control</h2>
+
+<h3 id="raceControl">
+-
+</h3>
+
+<p>
+<b>Lap:</b>
+<span id="raceLap">-</span>
+</p>
+
+<p>
+<b>Reason:</b>
+<span id="raceReason">-</span>
+</p>
+
+<p>
+<b>Decision:</b>
+<span id="raceMessage">-</span>
+</p>
+
+</section>
+<div class="card">
+<h2>🏆 Recommended Strategy</h2>
+<h1 id="strategy">
+-
+</h1>
+</div>
+<div class="card">
+<h2>🏁 Race Prediction</h2>
+<h1 id="position">
+-
+</h1>
+<p>
+Confidence:
+<b id="confidence">-</b>
+</p>
+</div>
+</section>
+<section class="card" style="margin:40px;">
+<h2>🛞 Tyre Strategy Plan</h2>
+<h3 id="stint1">-</h3>
+<h3 id="stint2">-</h3>
+<h3 id="stint3">-</h3>
+<br>
+<p>
+🔧 Pit Stop 1:
+<b id="pit1">-</b>
+</p>
+<p>
+🔧 Pit Stop 2:
+<b id="pit2">-</b>
+</p>
+</section>
+<section class="card" style="margin:40px;">
+<h2>📉 Tyre Wear Analysis</h2>
+<p>
+🔴 Soft
+</p>
+<div id="soft-bar">
+-
+</div>
+<p>
+🟡 Medium
+</p>
+<div id="medium-bar">
+-
+</div>
+<p>
+⚪ Hard
+</p>
+<div id="hard-bar">
+-
+</div>
+</section>
+<section class="cards">
+<div class="card">
+<h2>🌍 Race Conditions</h2>
+<p>
+Circuit:
+<b id="circuit">-</b>
+</p>
+<p>
+Weather:
+<b id="weather">-</b>
+</p>
+<p>
+Starting Tyre:
+<b id="tyre">-</b>
+</p>
+</div>
+<div class="card">
+<h2>📡 Race Engineer</h2>
+<p id="engineer">
+-
+</p>
+</div>
+</section>
+<div style="text-align:center;margin-top:40px;">
+
+<button onclick="saveProject()">
+💾 SAVE SIMULATION
+</button>
+
+<br><br>
+
+<a href="f1-setup.html">
+
+<button>
+NEW SIMULATION
+</button>
+
+</a>
+
+</div>
+<footer>
+
+<p>
+StrategyLab v1.0 © 2026
+</p>
+
+<p>
+Developed by Jaume Salas López
+</p>
+
+<p>
+Contact: jaumes2934@gmail.com
+</p>
+
+</footer>
+<script>
+const data = JSON.parse(localStorage.getItem("strategySimulation"));
+function createBar(value){
+let filled = Math.round(value / 10);
+return "█".repeat(filled) + "░".repeat(10-filled) + " " + value + "%";
+}
+if(data){
+document.getElementById("strategy").innerHTML =
+data.strategy;
+document.getElementById("position").innerHTML =
+data.position;
+document.getElementById("raceControl").innerHTML =
+data.raceControl;
+
+document.getElementById("raceLap").innerHTML =
+data.raceLap;
+
+document.getElementById("raceReason").innerHTML =
+data.raceReason;
+
+document.getElementById("raceMessage").innerHTML =
+data.raceMessage;
+document.getElementById("confidence").innerHTML =
+data.confidence + "%";
+document.getElementById("stint1").innerHTML =
+data.stint1;
+document.getElementById("stint2").innerHTML =
+data.stint2;
+document.getElementById("stint3").innerHTML =
+data.stint3 || "";
+document.getElementById("pit1").innerHTML =
+data.pit1;
+document.getElementById("pit2").innerHTML =
+data.pit2;
+document.getElementById("soft-bar").innerHTML =
+createBar(data.wear.soft);
+document.getElementById("medium-bar").innerHTML =
+createBar(data.wear.medium);
+document.getElementById("hard-bar").innerHTML =
+createBar(data.wear.hard);
+document.getElementById("circuit").innerHTML =
+data.circuit;
+document.getElementById("weather").innerHTML =
+data.weather;
+document.getElementById("tyre").innerHTML =
+data.tyre;
+document.getElementById("engineer").innerHTML =
+data.engineer;
+}
+function saveProject(){
+
+let projects =
+JSON.parse(localStorage.getItem("savedProjects")) || [];
+
+projects.push(data);
+
+localStorage.setItem(
+"savedProjects",
+JSON.stringify(projects)
+);
+
+alert("Simulation saved successfully!");
+
+}
+</script>
+</body>
+</html>
