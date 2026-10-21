@@ -1,273 +1,206 @@
 
-/* ==========================================
-   StrategyLab - Strategy Engine
-   Version 1.1 - Improved Race Results
-========================================== */
-
 function saveSimulation() {
+    const getValue = id => document.getElementById(id)?.value ?? "";
+
     const simulation = {
-        circuit: document.getElementById("circuit").value,
-        weather: document.getElementById("weather").value,
-        tyre: document.getElementById("tyre").value,
-        aggression: document.getElementById("aggression").value,
-        stops: document.getElementById("stops").value
+        circuit: getValue("circuit"),
+        weather: getValue("weather"),
+        tyre: getValue("tyre"),
+        aggression: getValue("aggression"),
+        stops: getValue("stops")
     };
 
-    // CIRCUIT TYRE WEAR
-    let wear = {
-        soft: 70,
-        medium: 55,
-        hard: 40
-    };
+    const match = simulation.stops.match(/\d+/);
+    const plannedStops = match ? Math.max(0, Math.min(3, Number(match[0]))) : 1;
+    const totalLaps = 57;
 
-    if (
-        simulation.circuit === "Barcelona-Catalunya" ||
-        simulation.circuit === "Bahrain" ||
-        simulation.circuit === "Qatar"
-    ) {
+    const wear = { soft: 70, medium: 55, hard: 40 };
+
+    if (["Barcelona-Catalunya", "Bahrain", "Qatar"].includes(simulation.circuit)) {
         wear.soft = 85;
         wear.medium = 70;
         wear.hard = 55;
-    } else if (
-        simulation.circuit === "Monaco" ||
-        simulation.circuit === "Canada"
-    ) {
+    } else if (["Monaco", "Canada"].includes(simulation.circuit)) {
         wear.soft = 55;
         wear.medium = 40;
         wear.hard = 30;
     }
 
-    let strategy = "";
-    let engineer = "";
     let confidence = 85;
-
+    let engineer = "";
     let raceControl = "🟢 Green Flag";
     let raceLap = "-";
     let raceReason = "No incidents reported.";
     let raceMessage = "Race proceeded normally.";
 
-    let stint1 = "";
-    let stint2 = "";
-    let stint3 = "";
-    let pit1 = "-";
-    let pit2 = "-";
+    const tyreNames = {
+        "Soft": "SOFT",
+        "Medium": "MEDIUM",
+        "Hard": "HARD",
+        "Intermediate": "INTERMEDIATE",
+        "Full Wet": "FULL WET"
+    };
 
-    // WEATHER AND STRATEGY
-    if (simulation.weather === "Rain") {
-        strategy = "INTERMEDIATE → FULL WET";
-        stint1 = "🟢 Intermediate | Lap 1-22";
-        stint2 = "🔵 Full Wet | Lap 23-Finish";
-        pit1 = "Lap 22";
+    const tyreEmoji = {
+        "SOFT": "🔴",
+        "MEDIUM": "🟡",
+        "HARD": "⚪",
+        "INTERMEDIATE": "🟢",
+        "FULL WET": "🔵"
+    };
 
-        engineer =
-            "Rain conditions detected. Prioritise grip and monitor track evolution.";
-        confidence = 88;
+    let startingTyre = tyreNames[simulation.tyre] || "MEDIUM";
 
-    } else if (simulation.weather === "Mixed Conditions") {
-        strategy = "INTERMEDIATE → MEDIUM";
-        stint1 = "🟢 Intermediate | Lap 1-18";
-        stint2 = "🟡 Medium | Lap 19-Finish";
-        pit1 = "Lap 18";
-
-        engineer =
-            "Mixed conditions. Adapt strategy depending on track drying speed.";
-        confidence = 82;
-
-    } else {
-        if (simulation.aggression === "Aggressive") {
-            strategy = "SOFT → MEDIUM → SOFT";
-            stint1 = "🔴 Soft | Lap 1-15";
-            stint2 = "🟡 Medium | Lap 16-42";
-            stint3 = "🔴 Soft | Lap 43-Finish";
-            pit1 = "Lap 15";
-            pit2 = "Lap 42";
-
-            engineer =
-                "High degradation risk. Attack early but manage tyre temperature.";
-            confidence = 84;
-
-        } else if (simulation.aggression === "Conservative") {
-            strategy = "MEDIUM → HARD";
-            stint1 = "🟡 Medium | Lap 1-30";
-            stint2 = "⚪ Hard | Lap 31-Finish";
-            pit1 = "Lap 30";
-
-            engineer =
-                "Low risk strategy. Hard tyre selected to reduce degradation.";
-            confidence = 90;
-
-        } else {
-            strategy = "MEDIUM → HARD";
-            stint1 = "🟡 Medium | Lap 1-28";
-            stint2 = "⚪ Hard | Lap 29-Finish";
-            pit1 = "Lap 28";
-
-            engineer =
-                "Balanced strategy. Medium tyre offers the best compromise.";
-            confidence = 86;
-        }
+    if (simulation.weather === "Rain" &&
+        !["INTERMEDIATE", "FULL WET"].includes(startingTyre)) {
+        startingTyre = "INTERMEDIATE";
     }
 
-    // RACE CONTROL
+    if (simulation.weather === "Mixed Conditions" &&
+        ["SOFT", "MEDIUM", "HARD"].includes(startingTyre)) {
+        startingTyre = "INTERMEDIATE";
+    }
+
+    const stintCount = plannedStops + 1;
+    const baseLength = Math.floor(totalLaps / stintCount);
+    const stints = [];
+    const pitLaps = [];
+
+    let stintStart = 1;
+
+    for (let i = 0; i < stintCount; i++) {
+        const stintEnd = i === stintCount - 1
+            ? totalLaps
+            : (i + 1) * baseLength;
+
+        let tyre;
+
+        if (i === 0) {
+            tyre = startingTyre;
+        } else if (simulation.weather === "Rain") {
+            tyre = i % 2 === 1 ? "FULL WET" : "INTERMEDIATE";
+        } else if (simulation.weather === "Mixed Conditions") {
+            tyre = i === stintCount - 1 ? "MEDIUM" : "INTERMEDIATE";
+        } else {
+            const sequence = ["SOFT", "MEDIUM", "HARD"];
+            const startIndex = sequence.indexOf(startingTyre);
+            const index = startIndex < 0 ? i % 3 : (startIndex + i) % 3;
+            tyre = sequence[index];
+        }
+
+        stints.push({ tyre, start: stintStart, end: stintEnd });
+
+        if (i < plannedStops) pitLaps.push(stintEnd);
+        stintStart = stintEnd + 1;
+    }
+
+    const strategy = stints.map(s => s.tyre).join(" → ");
+    const formatStint = s =>
+        `${tyreEmoji[s.tyre] || "⚫"} ${s.tyre} | Lap ${s.start}-${s.end}`;
+
+    const stint1 = formatStint(stints[0]);
+    const stint2 = stints[1] ? formatStint(stints[1]) : "";
+    const stint3 = stints[2] ? formatStint(stints[2]) : "";
+    const pit1 = pitLaps.length ? `Lap ${pitLaps[0]}` : "-";
+    const pit2 = pitLaps.length > 1 ? `Lap ${pitLaps[1]}` : "-";
+
+    if (simulation.weather === "Rain") {
+        engineer = "Wet race: monitor grip and changing track conditions.";
+        confidence = 78;
+    } else if (simulation.weather === "Mixed Conditions") {
+        engineer = "Mixed conditions: monitor the drying line before changing tyres.";
+        confidence = 80;
+    } else if (simulation.aggression === "Aggressive") {
+        engineer = "Aggressive approach: push when grip allows, but manage tyre wear.";
+        confidence = 82;
+    } else if (simulation.aggression === "Conservative") {
+        engineer = "Conservative approach: prioritise tyre life and consistent lap times.";
+        confidence = 88;
+    } else {
+        engineer = "Balanced approach: combine consistent pace with tyre management.";
+        confidence = 85;
+    }
+
     const randomEvent = Math.random();
 
     if (randomEvent < 0.10) {
         raceControl = "🚨 Safety Car";
-
-        const scLaps = [12, 18, 22, 31, 40];
-        const scReasons = [
-            "Multi-car collision",
-            "Car stopped on track",
-            "Heavy crash",
-            "Mechanical failure",
-            "Barrier damage"
+        const events = [
+            [12, "Multi-car collision"],
+            [18, "Car stopped on track"],
+            [22, "Heavy crash"],
+            [31, "Mechanical failure"],
+            [40, "Barrier damage"]
         ];
-
-        const randomIndex = Math.floor(
-            Math.random() * scLaps.length
-        );
-
-        raceLap = "Lap " + scLaps[randomIndex];
-        raceReason = scReasons[randomIndex];
-        raceMessage = "Consider a pit stop under Safety Car conditions.";
-
-        pit1 = raceLap;
-
+        const event = events[Math.floor(Math.random() * events.length)];
+        raceLap = `Lap ${event[0]}`;
+        raceReason = event[1];
+        raceMessage = "Review whether a pit stop under Safety Car is beneficial.";
     } else if (randomEvent < 0.30) {
         raceControl = "🟡 Virtual Safety Car";
-
-        const vscLaps = [10, 17, 24, 29, 36];
-        const vscReasons = [
-            "Debris on track",
-            "Slow car",
-            "Minor collision",
-            "Recovery vehicle",
-            "Track inspection"
+        const events = [
+            [10, "Debris on track"],
+            [17, "Slow car"],
+            [24, "Minor collision"],
+            [29, "Recovery vehicle"],
+            [36, "Track inspection"]
         ];
-
-        const randomIndex = Math.floor(
-            Math.random() * vscLaps.length
-        );
-
-        raceLap = "Lap " + vscLaps[randomIndex];
-        raceReason = vscReasons[randomIndex];
-        raceMessage = "A pit stop may cost less time under VSC.";
-
-        pit1 = raceLap;
+        const event = events[Math.floor(Math.random() * events.length)];
+        raceLap = `Lap ${event[0]}`;
+        raceReason = event[1];
+        raceMessage = "Review whether a pit stop under VSC is beneficial.";
     }
-
-    // IMPROVED FINISHING POSITION CALCULATION
-    // This is a simplified model, not real lap-time simulation.
 
     let raceScore = 50;
 
-    // Driving approach
-    if (simulation.aggression === "Aggressive") {
-        raceScore += 7;
-    } else if (simulation.aggression === "Conservative") {
-        raceScore -= 3;
-    } else {
-        raceScore += 2;
-    }
-
-    // Tyre choice and degradation
-    const tyre = simulation.tyre.toLowerCase();
+    if (simulation.aggression === "Aggressive") raceScore += 5;
+    else if (simulation.aggression === "Conservative") raceScore -= 2;
+    else raceScore += 2;
 
     if (simulation.weather === "Rain") {
-        if (tyre.includes("wet") || tyre.includes("inter")) {
-            raceScore += 7;
-        } else {
-            raceScore -= 8;
-        }
+        raceScore += ["INTERMEDIATE", "FULL WET"].includes(startingTyre) ? 5 : -12;
     } else if (simulation.weather === "Mixed Conditions") {
-        if (tyre.includes("inter")) {
-            raceScore += 5;
-        } else if (
-            tyre.includes("soft") ||
-            tyre.includes("medium") ||
-            tyre.includes("hard")
-        ) {
-            raceScore -= 2;
-        }
+        raceScore += startingTyre === "INTERMEDIATE" ? 4 : -3;
     } else {
-        if (tyre.includes("soft")) {
-            raceScore += 4;
-            raceScore -= wear.soft / 25;
-        } else if (tyre.includes("medium")) {
-            raceScore += 3;
-            raceScore -= wear.medium / 35;
-        } else if (tyre.includes("hard")) {
-            raceScore += 1;
-            raceScore -= wear.hard / 45;
-        }
+        if (startingTyre === "SOFT") raceScore += 2 - wear.soft / 35;
+        if (startingTyre === "MEDIUM") raceScore += 3 - wear.medium / 35;
+        if (startingTyre === "HARD") raceScore += 1 - wear.hard / 45;
+        if (["INTERMEDIATE", "FULL WET"].includes(startingTyre)) raceScore -= 10;
     }
 
-    // Pit-stop choice: reward sensible one- or two-stop plans.
-    const stopText = simulation.stops.toLowerCase();
-    const stopNumber = parseInt(stopText, 10);
+    if (plannedStops === 0) raceScore -= 5;
+    if (plannedStops === 1) raceScore += 3;
+    if (plannedStops === 2) raceScore += 2;
+    if (plannedStops === 3) raceScore -= 2;
 
-    if (!Number.isNaN(stopNumber)) {
-        if (stopNumber === 1 || stopNumber === 2) {
-            raceScore += 3;
-        } else if (stopNumber >= 3) {
-            raceScore -= 2;
-        } else if (stopNumber === 0) {
-            raceScore -= 5;
-        }
-    } else if (stopText.includes("one") || stopText.includes("two")) {
-        raceScore += 2;
-    }
+    if (raceControl === "🚨 Safety Car") raceScore += 2;
+    if (raceControl === "🟡 Virtual Safety Car") raceScore += 1;
 
-    // Incident influence: no automatic position promotion.
-    if (raceControl === "🚨 Safety Car") {
-        raceScore += 2;
-    } else if (raceControl === "🟡 Virtual Safety Car") {
-        raceScore += 1;
-    }
+    raceScore += Math.random() * 40 - 20;
 
-    // Race-to-race variation
-    raceScore += Math.random() * 60 - 30;
+    let finishingPosition = Math.round(10 - (raceScore - 50) / 3);
+    finishingPosition = Math.max(1, Math.min(20, finishingPosition));
+    const position = `P${finishingPosition}`;
 
-    // Convert score into a finishing position from P1 to P20
-    let finishingPosition = Math.round(
-        10 - (raceScore - 50) / 3.5
-    );
-
-    finishingPosition = Math.max(
-        1,
-        Math.min(20, finishingPosition)
-    );
-
-    const position = "P" + finishingPosition;
-
-    // SAVE RESULT
     const result = {
-        raceControl: raceControl,
-        raceLap: raceLap,
-        raceReason: raceReason,
-        raceMessage: raceMessage,
-
+        raceControl,
+        raceLap,
+        raceReason,
+        raceMessage,
         ...simulation,
-
-        strategy: strategy,
-        engineer: engineer,
-        confidence: confidence,
-        position: position,
-
-        stint1: stint1,
-        stint2: stint2,
-        stint3: stint3,
-
-        pit1: pit1,
-        pit2: pit2,
-
-        wear: wear
+        plannedStops,
+        strategy,
+        engineer,
+        confidence,
+        position,
+        stint1,
+        stint2,
+        stint3,
+        pit1,
+        pit2,
+        wear
     };
 
-    localStorage.setItem(
-        "strategySimulation",
-        JSON.stringify(result)
-    );
-
+    localStorage.setItem("strategySimulation", JSON.stringify(result));
     window.location.href = "results.html";
 }
